@@ -1,6 +1,6 @@
 [project]
 name = "venomcheck"
-version = "0.1.0"
+version = "0.1.0-beta.1"
 description = "Scan Python dependencies for vulnerabilities with dependency chain tracing"
 requires-python = ">=3.13"
 license = "MIT"
