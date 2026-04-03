@@ -8,6 +8,10 @@ A GitHub Action that scans Python dependencies for known vulnerabilities and
 traces each finding back through the dependency chain to the direct dependency
 that introduced it.
 
+## Origin
+
+This project was originally written for [@populationgenomics](https://github.com/populationgenomics) as [python-package-scanner](https://github.com/populationgenomics/python-package-scanner). It has been copied here to allow independent development — adding features, experimenting with new directions, and diverging from the upstream version's scope. Built with help from [Claude](https://claude.ai).
+
 ## Why?
 
 Existing scanners (pip-audit, osv-scanner, grype) tell you *what* is vulnerable
