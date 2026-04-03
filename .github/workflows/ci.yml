@@ -18,7 +18,7 @@ jobs:
 
       - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
-          python-version: "3.11"
+          python-version: "3.13"
 
       - name: Install dev dependencies
         run: pip install pytest ruff
@@ -39,7 +39,7 @@ jobs:
 
       - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
-          python-version: "3.11"
+          python-version: "3.13"
 
       - name: Run scanner against uv fixture
         run: |
@@ -61,7 +61,7 @@ jobs:
 
       - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
-          python-version: "3.11"
+          python-version: "3.13"
 
       - name: Install packages from fixture requirements.txt
         run: pip install -r tests/fixtures/requirements.txt

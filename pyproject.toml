@@ -2,14 +2,14 @@
 name = "venomcheck"
 version = "0.1.0"
 description = "Scan Python dependencies for vulnerabilities with dependency chain tracing"
-requires-python = ">=3.11"
+requires-python = ">=3.13"
 license = "MIT"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 
 [tool.ruff]
-target-version = "py311"
+target-version = "py313"
 line-length = 100
 
 [tool.ruff.lint]
