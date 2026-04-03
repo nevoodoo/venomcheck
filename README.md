@@ -25,15 +25,15 @@ Existing scanners (pip-audit, osv-scanner, grype) tell you *what* is vulnerable 
 ```
 Found 3 vulnerabilities in 2 packages
 
-| Package      | Version | Vulnerability  | Fix    | Dependency Chain                           |
-|--------------|---------|----------------|--------|--------------------------------------------|
-| cryptography | 46.0.3  | CVE-2026-26007 | 46.0.5 | azure-identity > azure-core > cryptography |
-| protobuf     | 3.20.2  | CVE-2025-4565  | 4.25.8 | **hail** (pinned, blocked)                 |
-| protobuf     | 3.20.2  | CVE-2026-0994  | 5.29.6 | **hail** (pinned, blocked)                 |
+| Package      | Version | Vulnerability  | Fix    | Dependency Chain                              |
+|--------------|---------|----------------|--------|-----------------------------------------------|
+| cryptography | 42.0.0  | CVE-2024-26130 | 42.0.4 | boto3 > botocore > urllib3 > cryptography     |
+| requests     | 2.31.0  | CVE-2024-35195 | 2.32.0 | flask-admin > requests                        |
+| certifi      | 2023.7  | CVE-2024-39689 | 2024.7 | **httpx** (pinned ==0.24.0, blocked)          |
 
 ### Summary
-- 1 fixable via dependency upgrade
-- 2 blocked by upstream constraints
+- 2 fixable via dependency upgrade
+- 1 blocked by upstream constraints
 ```
 
 ## Quick start
