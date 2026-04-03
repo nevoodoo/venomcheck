@@ -46,11 +46,17 @@ Found 3 vulnerabilities in 2 packages
 
 #### uv project
 
+Auto-detected when `uv.lock` is present — no extra config needed.
+
 ```yaml
 - uses: nevoodoo/venomcheck@<COMMIT_SHA> # v0
+  with:
+    mode: uv  # optional, auto-detected
 ```
 
 #### pip project
+
+Requires packages to be installed first so venomcheck can read their metadata.
 
 ```yaml
 - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
