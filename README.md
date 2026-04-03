@@ -36,43 +36,21 @@ Found 3 vulnerabilities in 2 packages
 - 1 blocked by upstream constraints
 ```
 
-## Quick start
-
-### GitHub Action
-
-```yaml
-- uses: nevoodoo/venomcheck@<COMMIT_SHA> # v0
-```
-
-### CLI
-
-```bash
-python -m venomcheck.cli --mode uv --path /path/to/project
-```
-
 ## Usage
 
 > [!TIP]
 > **Pin to commit hashes, not tags.** Tags are mutable — a compromised upstream
 > can repoint a tag to malicious code. Commit SHAs are immutable.
 
-<details>
-<summary><strong>With options</strong></summary>
+### GitHub Action
+
+#### uv project
 
 ```yaml
 - uses: nevoodoo/venomcheck@<COMMIT_SHA> # v0
-  with:
-    mode: auto              # auto | uv | pip
-    fail-on-vulns: true     # exit 1 if vulnerabilities found
-    comment-on-pr: true     # post/update PR comment
-    ignore-ids: "CVE-2026-0994,GHSA-xxxx"
-    ignore-packages: "protobuf"
 ```
 
-</details>
-
-<details>
-<summary><strong>pip project</strong></summary>
+#### pip project
 
 ```yaml
 - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
@@ -84,10 +62,20 @@ python -m venomcheck.cli --mode uv --path /path/to/project
     mode: pip
 ```
 
-</details>
+#### With all options
 
-<details>
-<summary><strong>Monorepo (scan a subdirectory)</strong></summary>
+```yaml
+- uses: nevoodoo/venomcheck@<COMMIT_SHA> # v0
+  with:
+    mode: auto              # auto | uv | pip
+    fail-on-vulns: true     # exit 1 if vulnerabilities found
+    comment-on-pr: true     # post/update PR comment
+    ignore-ids: "CVE-2024-39689,GHSA-xxxx"
+    ignore-packages: "certifi"
+    exclude-dev: false       # set true to skip dev dependencies
+```
+
+#### Monorepo (scan a subdirectory)
 
 ```yaml
 - uses: nevoodoo/venomcheck@<COMMIT_SHA> # v0
@@ -95,10 +83,7 @@ python -m venomcheck.cli --mode uv --path /path/to/project
     path: services/api
 ```
 
-</details>
-
-<details>
-<summary><strong>Use the report in a later step</strong></summary>
+#### Use the report in a later step
 
 ```yaml
 - uses: nevoodoo/venomcheck@<COMMIT_SHA> # v0
@@ -108,7 +93,21 @@ python -m venomcheck.cli --mode uv --path /path/to/project
 - run: echo "Found ${{ steps.scan.outputs.vuln-count }} vulnerabilities"
 ```
 
-</details>
+### CLI
+
+```bash
+# uv project
+python -m venomcheck.cli --mode uv --path /path/to/project
+
+# pip project
+python -m venomcheck.cli --mode pip --path /path/to/project
+
+# JSON output
+python -m venomcheck.cli --format json
+
+# Ignore specific packages or CVEs
+python -m venomcheck.cli --ignore-packages certifi --ignore-ids CVE-2024-39689
+```
 
 ## Inputs
 
@@ -168,14 +167,6 @@ on:
 `push` fires only for `main`, `pull_request` fires for PRs — no double runs.
 
 </details>
-
-## Local usage
-
-```bash
-python -m venomcheck.cli --mode uv --path /path/to/project
-python -m venomcheck.cli --mode pip --format json
-python -m venomcheck.cli --ignore-packages protobuf --ignore-ids CVE-2026-0994
-```
 
 ## Status
 
