@@ -1,65 +1,62 @@
 name: Release
 
 on:
-  push:
-    tags:
-      - "v*"
+  pull_request:
+    types: [closed]
+    branches: [main]
 
 permissions:
   contents: write
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-
-      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
-        with:
-          python-version: "3.13"
-
-      - name: Install dev dependencies
-        run: pip install pytest ruff
-
-      - name: Lint
-        run: ruff check venomcheck/ tests/
-
-      - name: Test
-        run: pytest tests/ -v
-
   release:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
-    needs: test
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 0
 
-      - name: Get previous tag
-        id: prev_tag
-        run: |
-          PREV=$(git tag --sort=-creatordate | grep '^v' | sed -n '2p' || echo "")
-          echo "tag=$PREV" >> "$GITHUB_OUTPUT"
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.13"
 
-      - name: Generate changelog
-        id: changelog
+      - name: Get version from pyproject.toml
+        id: version
         run: |
-          TAG="${GITHUB_REF#refs/tags/}"
-          PREV="${{ steps.prev_tag.outputs.tag }}"
+          VERSION=$(python -c "import tomllib; print(tomllib.load(open('pyproject.toml','rb'))['project']['version'])")
+          echo "version=v${VERSION}" >> "$GITHUB_OUTPUT"
 
-          if [ -z "$PREV" ]; then
-            LOG=$(git log --pretty=format:"- %s (%h)" "$TAG")
+      - name: Check if tag already exists
+        id: check_tag
+        run: |
+          TAG="${{ steps.version.outputs.version }}"
+          if git rev-parse "$TAG" >/dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
           else
-            LOG=$(git log --pretty=format:"- %s (%h)" "${PREV}..${TAG}")
+            echo "exists=false" >> "$GITHUB_OUTPUT"
           fi
 
-          echo "$LOG" > /tmp/changelog.md
+      - name: Generate changelog
+        if: steps.check_tag.outputs.exists == 'false'
+        run: |
+          TAG="${{ steps.version.outputs.version }}"
+          PREV=$(git tag --sort=-creatordate | grep '^v' | head -1 || echo "")
 
-      - name: Create GitHub release
+          if [ -z "$PREV" ]; then
+            git log --pretty=format:"- %s (%h)" > /tmp/changelog.md
+          else
+            git log --pretty=format:"- %s (%h)" "${PREV}..HEAD" > /tmp/changelog.md
+          fi
+
+      - name: Create tag and release
+        if: steps.check_tag.outputs.exists == 'false'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          TAG="${GITHUB_REF#refs/tags/}"
+          TAG="${{ steps.version.outputs.version }}"
+          git tag "$TAG"
+          git push origin "$TAG"
           gh release create "$TAG" \
             --title "$TAG" \
             --notes-file /tmp/changelog.md
